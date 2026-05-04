@@ -1,0 +1,27 @@
+{
+  "name": "eg-walker-cm6",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vite": "^8.0.0",
+    "@types/bun": "latest"
+  },
+  "dependencies": {
+    "@codemirror/lang-javascript": "^6.2.5",
+    "@codemirror/state": "^6.6.0",
+    "@codemirror/view": "^6.40.0",
+    "@types/ws": "^8.18.1",
+    "bun": "^1.3.10",
+    "codemirror": "^6.0.2",
+    "fastpriorityqueue": "^0.8.0",
+    "ws": "^8.20.0"
+  },
+  "module": "index.ts"
+}

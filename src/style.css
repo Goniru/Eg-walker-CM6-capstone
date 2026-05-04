@@ -1,0 +1,52 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  font-family: sans-serif;
+}
+
+#app {
+  height: 100vh;
+}
+
+.page {
+  display: grid;
+  grid-template-columns: 5fr 1fr;
+  gap: 16px;
+  height: 100%;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.pane {
+  display: grid;
+  grid-template-rows: 1fr 220px;
+  gap: 12px;
+  min-height: 0;
+}
+
+.control-panel {
+  display: flex;
+  flex-direction: column;   /* 세로 나열 */
+  justify-content: center;  /* 세로 중앙 정렬 */
+  align-items: center;      /* 가로 중앙 정렬 */
+  gap: 12px;
+}
+
+.editor {
+  border: 1px solid #ccc;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.oplog {
+  border: 1px solid #ccc;
+  margin: 0;
+  padding: 12px;
+  overflow: auto;
+  white-space: pre-wrap;
+  font-size: 12px;
+}
