@@ -967,32 +967,42 @@ export class CRDTDocument {
         return { ...this.oplog.version };
     }
     
-    // 상대방의 버전을 보고, 내가 가진 연산 중 상대방이 모르는 연산(증가분)만 골라냄
     getMissingOps(remoteVersion: RemoteVersion): TransferOp<string>[] {
-        const missingOps: TransferOp<string>[] = [];
+        const reversed: TransferOp<string>[] = [];
 
-        for (const op of this.oplog.ops) {
+        let remaining = 0;
+
+        for (const [agent, localSeq] of Object.entries(this.oplog.version)) {
+            const remoteSeq = remoteVersion[agent] ?? -1;
+            if (localSeq > remoteSeq) {
+            remaining += localSeq - remoteSeq;
+            }
+        }
+
+        if (remaining === 0) return [];
+
+        for (let lv = this.oplog.ops.length - 1; lv >= 0 && remaining > 0; lv--) {
+            const op = this.oplog.ops[lv];
             const [agent, seq] = op.id;
-            // 상대방이 해당 agent에 대해 아는 마지막 seq. 모르면 -1
             const remoteSeq = remoteVersion[agent] ?? -1;
 
-            // seq가 상대방보다 작으면 이미 아는 연산 -> 스킵
-            if (seq  <= remoteSeq) continue
+            if (seq <= remoteSeq) continue;
 
-            // * LV인 부모를 ID로 변환
-            const parentIds = op.parents.map(lv => this.oplog.ops[lv].id);
-            
-            missingOps.push({
-                type: op.type,
-                pos: op.pos,
-                ...(op.type === "ins" ? {content: op.content} : {}), // del 연산의 경우 content x
-                id: op.id,
-                parentIds: parentIds
+            const parentIds = op.parents.map(parentLv => this.oplog.ops[parentLv].id);
+
+            reversed.push({
+            type: op.type,
+            pos: op.pos,
+            ...(op.type === "ins" ? { content: op.content } : {}),
+            id: op.id,
+            parentIds,
             } as TransferOp<string>);
-            
+
+            remaining--;
         }
-        return missingOps;
-    }
+
+        return reversed.reverse();
+        }
     
 
     mergeDelta(deltaOps: TransferOp<string>[]): TextPatch[] {
